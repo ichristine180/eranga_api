@@ -24,7 +24,7 @@ export const createUser = async (req, res) => {
       result: user,
     });
   } catch (err) {
-    console.log(err);
+    console.log(err.message);
   }
 };
 const validate = (res, req) => {
@@ -74,13 +74,13 @@ export const login = async (req, res) => {
     if (user && (await bcryptjs.compare(password, user.password))) {
       const token = createToken(user);
       user.token = token;
-      res.status(201).json({
+     return res.status(201).json({
         error: false,
         message: "",
         result: user,
       });
     }
-    res.status(400).json({
+    return res.status(400).json({
       error: true,
       message: "Invalid credentials",
       result: [],
