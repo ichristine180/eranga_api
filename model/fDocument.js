@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
 
 const fDocument_schema = new mongoose.Schema({
-  doc_image: { data: Buffer, contentType: String},
+  doc_image: { data: Buffer, contentType: String },
   owner_first_name: { type: String, required: true },
   owner_last_name: { type: String, required: true },
   owner_mobile: { type: String, minlength: 10, maxlength: 10 },
+  owner_email: { type: String },
   founder_first_name: { type: String, required: true },
   founder_last_name: { type: String, required: true },
   found_mobile: { type: String, required: true, minlength: 10, maxlength: 10 },

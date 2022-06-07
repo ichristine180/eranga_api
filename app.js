@@ -3,12 +3,15 @@ import connect from "./config/database.js";
 import express, { json } from "express";
 import { createUser, login } from "./controllers/user.js";
 import authenticate from "./middleware/auth.js";
+import { createDoc, viewFounderMobile } from "./controllers/fDocument.js";
 const app = express();
 
 app.use(json());
 const router = express.Router();
 router.post("/create", createUser);
 router.post("/login", login);
+router.post("/fdoc/create", createDoc);
+router.post("/fdoc/viewContact", viewFounderMobile);
 app.get("/", authenticate, (req, res) => {
   res.status(200).send("Welcome 🙌 to eranga");
 });
