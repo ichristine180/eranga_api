@@ -1,5 +1,6 @@
 import fDocument from "../model/fDocument.js";
 import { response } from "./common.js";
+import { sendEmail } from "./mail.js";
 
 /* this function will be used to get submitted doc,published doc*/
 export const findByStatus = async (req, res) => {
@@ -92,26 +93,83 @@ export const createDoc = async (req, res) => {
     });
   }
 };
-
+const mailOptions = (found) => {
+  return {
+    from: "do_not_reply@fidelisadvocates.org",
+    to: found.owner_email,
+    subject: "Numero yuwatoye Ibyangombwa",
+    html: `<h3>Murakoze gukoresha E-ranga</h3> 
+<p>Ibyangombwa byanyu byatowe na 
+${found.founder_first_name} ${found.founder_last_name} Mwamuhamagara kuri iyi numero:
+ ${found.found_mobile}</p>
+ <i> ugize ikibazo waduhamagara kuri iyi numero: 0788720204/0786449617</i>`,
+  };
+};
 export const viewFounderMobile = async (req, res) => {
   try {
-    const { id, owner_first_name, owner_last_name, owner_mobile, owner_email } =
-      req.body;
-    const found = await fDocument.findByIdAndUpdate(id, {
-      owner_email,
-      owner_first_name,
-      owner_last_name,
-      owner_mobile,
-      status: "paid",
-    });
-    res.status(200).json({
-      error: false,
-      message: "",
-      result: found,
-    });
+    const { id, owner_mobile, owner_email } = req.body;
+    if (owner_email && owner_email && id) {
+      const found = await fDocument.findByIdAndUpdate(id, {
+        owner_email,
+        owner_mobile,
+        status: "paid",
+      });
+      if (found) {
+        const mailResponse = await sendEmail(mailOptions(found));
+        if (mailResponse.response)
+          res.status(200).json({
+            error: false,
+            message: "founder contact sent via email",
+            result: found,
+          });
+      } else
+        res.status(404).json({
+          error: true,
+          message: "No data found",
+          result: [],
+        });
+    } else validateInput(req, res);
   } catch (error) {
     return response(req, res, {
       error: true,
+      message: error.message,
+      result: [],
+      status: 500,
+    });
+  }
+};
+
+const validateInput = (req, res) => {
+  const { id, owner_mobile, owner_email } = req.body;
+  if (!id)
+    return res.status(500).json({
+      error: true,
+      message: "Missing required field id.",
+    });
+  if (!owner_email)
+    return res.status(500).json({
+      error: true,
+      message: "Missing required field email.",
+    });
+  if (!owner_mobile)
+    return res.status(500).json({
+      error: true,
+      message: "Missing required field mobile number.",
+    });
+};
+
+export const deleteDoc = async ({ id, data }) => {
+  try {
+    const doc = await fDocument.findByIdAndDelete({ _id: id });
+    return response(req, res, {
+      error: false,
+      message: "Document closed suuccessfully!",
+      result: doc,
+      status: 200,
+    });
+  } catch (error) {
+    return response(req, res, {
+      error: false,
       message: error.message,
       result: [],
       status: 500,
