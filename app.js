@@ -2,6 +2,7 @@ import {} from "dotenv/config";
 import connect from "./config/database.js";
 import express, { json } from "express";
 import { createUser, login } from "./controllers/user.js";
+import multer from "multer";
 import authenticate from "./middleware/auth.js";
 import {
   createDoc,
@@ -11,22 +12,35 @@ import {
   updateDoc,
   viewFounderMobile,
 } from "./controllers/fDocument.js";
+import { handleUpload } from "./middleware/uploadHandler.js";
 const app = express();
-
 app.use(json());
+// for uploading document image
+const upload = multer({ storage: multer.memoryStorage() });
 const router = express.Router();
 router.post("/create", createUser);
 router.post("/login", login);
-// found document public routes 
-router.post("/fdoc/create", createDoc);
+// found document public routes
+router.post(
+  "/fdoc/create",
+  upload.single("doc_image"),
+  handleUpload,
+  createDoc
+);
 router.post("/fdoc/viewContact", viewFounderMobile);
-router.get("/fdoc/getByStatus", findByStatus);
-// found document admin routes 
-router.get("/fdoc/all",authenticate, getAllDocument);
+router.post("/fdoc/getByStatus", findByStatus);
+// found document admin routes
+router.get("/fdoc/all", authenticate, getAllDocument);
 router.post("/fdoc/update", authenticate, updateDoc);
 router.post("/fdoc/close", authenticate, deleteDoc);
 app.get("/", authenticate, (req, res) => {
   res.status(200).send("Welcome 🙌 to eranga");
+});
+app.use((req, res, next) => {
+  res.append("Access-Control-Allow-Origin", ["*"]);
+  res.append("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+  res.append("Access-Control-Allow-Headers", "Content-Type");
+  next();
 });
 app.use("/api", router);
 

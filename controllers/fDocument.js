@@ -77,6 +77,7 @@ export const createDoc = async (req, res) => {
       description,
       owner_first_name,
       owner_last_name,
+      status: "submitted",
     });
     return response(req, res, {
       error: false,
