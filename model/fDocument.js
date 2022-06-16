@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const fDocument_schema = new mongoose.Schema({
+  at_created: { type: Date },
   doc_image: { data: Buffer, contentType: String },
   owner_first_name: { type: String, required: true },
   owner_last_name: { type: String, required: true },

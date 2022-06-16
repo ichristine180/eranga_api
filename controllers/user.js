@@ -30,7 +30,7 @@ export const createUser = async (req, res) => {
 const validate = (res, req) => {
   const { first_name, last_name, email, password } = req.body;
   if (!(email && password && first_name && last_name)) {
-    res.status(400).json({
+    res.status(200).json({
       error: true,
       message: "All field are required!!",
       result: [],
@@ -64,7 +64,7 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
     if (!(email && password))
-      return res.status(400).json({
+      return res.status(200).json({
         error: true,
         message: "both email and password are required!!",
         result: [],
@@ -80,7 +80,7 @@ export const login = async (req, res) => {
         result: user,
       });
     }
-    return res.status(400).json({
+    return res.status(200).json({
       error: true,
       message: "Invalid credentials",
       result: [],
