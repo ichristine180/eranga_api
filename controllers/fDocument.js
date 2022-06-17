@@ -25,7 +25,7 @@ export const findByStatus = async (req, res) => {
 
 export const getAllDocument = async (req, res) => {
   try {
-    const doc = await fDocument.findAll();
+    const doc = await fDocument.find();
     return response(req, res, {
       error: false,
       message: "",
@@ -40,8 +40,9 @@ export const getAllDocument = async (req, res) => {
     });
   }
 };
-export const updateDoc = async ({ id, data }) => {
+export const updateDoc = async (req, res) => {
   try {
+    const { id, data } = req.body;
     const doc = await fDocument.findByIdAndUpdate({ _id: id }, data);
     return response(req, res, {
       error: false,
@@ -70,6 +71,7 @@ export const createDoc = async (req, res) => {
   } = req.body;
   try {
     const doc = await fDocument.create({
+      at_created: new Date(),
       doc_image,
       founder_first_name,
       founder_last_name,
@@ -90,14 +92,14 @@ export const createDoc = async (req, res) => {
       error: true,
       message: error.message,
       result: [],
-      status: 500,
+      status: 200,
     });
   }
 };
-const mailOptions = (found) => {
+const mailOptions = (found,owner_email) => {
   return {
     from: "do_not_reply@fidelisadvocates.org",
-    to: found.owner_email,
+    to: owner_email,
     subject: "Numero yuwatoye Ibyangombwa",
     html: `<h3>Murakoze gukoresha E-ranga</h3> 
 <p>Ibyangombwa byanyu byatowe na 
@@ -116,7 +118,7 @@ export const viewFounderMobile = async (req, res) => {
         status: "paid",
       });
       if (found) {
-        const mailResponse = await sendEmail(mailOptions(found));
+        const mailResponse = await sendEmail(mailOptions(found,owner_email));
         if (mailResponse.response)
           res.status(200).json({
             error: false,
@@ -159,12 +161,13 @@ const validateInput = (req, res) => {
     });
 };
 
-export const deleteDoc = async ({ id, data }) => {
+export const deleteDoc = async (req, res) => {
   try {
+    const { id } = req.body;
     const doc = await fDocument.findByIdAndDelete({ _id: id });
     return response(req, res, {
       error: false,
-      message: "Document closed suuccessfully!",
+      message: "Document Rejected suuccessfully!",
       result: doc,
       status: 200,
     });
@@ -173,7 +176,7 @@ export const deleteDoc = async ({ id, data }) => {
       error: false,
       message: error.message,
       result: [],
-      status: 500,
+      status: 200,
     });
   }
 };

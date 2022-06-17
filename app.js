@@ -32,7 +32,7 @@ router.post("/fdoc/getByStatus", findByStatus);
 // found document admin routes
 router.get("/fdoc/all", authenticate, getAllDocument);
 router.post("/fdoc/update", authenticate, updateDoc);
-router.post("/fdoc/close", authenticate, deleteDoc);
+router.post("/fdoc/reject", authenticate, deleteDoc);
 app.get("/", authenticate, (req, res) => {
   res.status(200).send("Welcome 🙌 to eranga");
 });
