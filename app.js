@@ -13,6 +13,7 @@ import {
   viewFounderMobile,
 } from "./controllers/fDocument.js";
 import { handleUpload } from "./middleware/uploadHandler.js";
+import { deleteLostDoc, getAllLostDoc, getPublishedDoc, saveLostDoc, updateLostDoc } from "./controllers/lDocument.js";
 const app = express();
 app.use(json());
 // for uploading document image
@@ -29,10 +30,18 @@ router.post(
 );
 router.post("/fdoc/viewContact", viewFounderMobile);
 router.post("/fdoc/getByStatus", findByStatus);
+//lost document public routes
+router.post("/ldoc/create", saveLostDoc);
+router.post("/ldoc/published", getPublishedDoc);
 // found document admin routes
 router.get("/fdoc/all", authenticate, getAllDocument);
 router.post("/fdoc/update", authenticate, updateDoc);
 router.post("/fdoc/reject", authenticate, deleteDoc);
+
+// Lost document admin routes
+router.get("/ldoc/all", authenticate, getAllLostDoc);
+router.post("/ldoc/update", authenticate, updateLostDoc);
+router.post("/ldoc/reject", authenticate, deleteLostDoc);
 app.get("/", authenticate, (req, res) => {
   res.status(200).send("Welcome 🙌 to eranga");
 });
